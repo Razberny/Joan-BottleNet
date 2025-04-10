@@ -148,7 +148,7 @@ bool bottleDetected() {
 void sendSMS(String message) {
   sim900.println("AT+CMGF=1"); // SMS text mode
   delay(500);
-  sim900.println("AT+CMGS=\"+639456929127\""); // Replace with your number
+  sim900.println("AT+CMGS=\"+639312046126\""); // Replace with your number
   delay(500);
   sim900.print(message);
   delay(500);
@@ -209,7 +209,6 @@ void initializeLCD() {
   lcd.print("LCD Test");
   delay(500);
 }
-
 
 void updateDisplay(float height, String size, bool hasWater, bool accepted) {
   lcd.clear();
@@ -284,4 +283,7 @@ void logResults(float height, String size, bool hasWater, bool accepted) {
   Serial.print(" | Size: "); Serial.print(size);
   Serial.print(" | Water: "); Serial.print(hasWater ? "Yes" : "No");
   Serial.print(" | Status: "); Serial.println(accepted ? "ACCEPTED" : "REJECTED");
+  float binLevel = measureBinLevel();
+  Serial.print(" | Bin Level: "); Serial.print(binLevel); Serial.println("cm");
+
 }
