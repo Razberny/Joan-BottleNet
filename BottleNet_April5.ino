@@ -5,6 +5,14 @@
 // ======================
 // Hardware Configuration
 // ======================
+// Bin Ultrasonic Sensor
+const int BIN_TRIG_PIN = 3;
+const int BIN_ECHO_PIN = 4;
+const float BIN_FULL_THRESHOLD = 10.0; // cm or less means bin is full
+
+// SIM900A
+#include <SoftwareSerial.h>
+SoftwareSerial sim900(7, 6); // RX, TX
 
 // LCD (Try both addresses if needed)
 LiquidCrystal_I2C lcd(0x27, 20, 4);  // 0x27 or 0x3F
@@ -57,6 +65,19 @@ void setup() {
   pinMode(ECHO_PIN, INPUT);
   digitalWrite(TRIG_PIN, LOW);
 
+  // Bin Sensor Pins
+  pinMode(BIN_TRIG_PIN, OUTPUT);
+  pinMode(BIN_ECHO_PIN, INPUT);
+  digitalWrite(BIN_TRIG_PIN, LOW);
+
+  // SIM900A Initialization
+  sim900.begin(9600);
+  delay(1000);
+  sim900.println("AT"); // Basic check
+  delay(1000);
+  sim900.println("AT+CMGF=1"); // Set SMS mode
+  delay(1000);
+
   // Indicator Setup
   pinMode(BUZZER_PIN, OUTPUT);
   pinMode(GREEN_LED, OUTPUT);
@@ -86,6 +107,20 @@ void loop() {
     lcd.clear();
   }
   delay(10);
+
+    float binLevel = measureBinLevel();
+  static bool binWasFull = false;
+
+  if (binLevel < BIN_FULL_THRESHOLD && !binWasFull) {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("!!! BIN FULL !!!");
+    sendSMS("The Bin is FULL");
+    binWasFull = true;
+  } else if (binLevel >= BIN_FULL_THRESHOLD) {
+    binWasFull = false;
+  }
+  
 }
 
 // ===================
@@ -108,6 +143,28 @@ bool bottleDetected() {
   
   lastState = currentState;
   return false;
+}
+
+void sendSMS(String message) {
+  sim900.println("AT+CMGF=1"); // SMS text mode
+  delay(500);
+  sim900.println("AT+CMGS=\"+639456929127\""); // Replace with your number
+  delay(500);
+  sim900.print(message);
+  delay(500);
+  sim900.write(26); // End with Ctrl+Z
+  delay(5000);
+}
+
+float measureBinLevel() {
+  digitalWrite(BIN_TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(BIN_TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(BIN_TRIG_PIN, LOW);
+  long duration = pulseIn(BIN_ECHO_PIN, HIGH);
+  float distance = duration * 0.0343 / 2;
+  return distance;
 }
 
 void inspectBottle() {
