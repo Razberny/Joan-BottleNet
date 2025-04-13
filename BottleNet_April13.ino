@@ -29,7 +29,7 @@ const int IR_SENSOR_PIN = 2;      // LOW when bottle detected
 const int CAP_SENSOR_PIN = A0;    // Higher value = water present
 const int TRIG_PIN = 9;           // Ultrasonic
 const int ECHO_PIN = 10;          // Ultrasonic
-
+c:\Users\jay58\OneDrive\Documents\Arduino\BottleNet_April13\BottleNet_April13.ino
 // Button
 const int BUTTON_PIN = 12;        // Button to activate system
 
@@ -88,6 +88,7 @@ void loop() {
   if (!systemActive && digitalRead(BUTTON_PIN) == LOW) {
     systemActive = true;
     lastActivityTime = millis();
+    Serial.print("Button Pressed");
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("System Active");
@@ -100,6 +101,7 @@ void loop() {
   // Check for inactivity timeout
   if (systemActive && (millis() - lastActivityTime) > INACTIVITY_TIMEOUT) {
     systemActive = false;
+    Serial.print("Inactivity");
     showWelcomeScreen();
   }
 
