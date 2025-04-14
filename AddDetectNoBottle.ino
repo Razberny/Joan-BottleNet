@@ -65,6 +65,7 @@ void setup() {
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
   digitalWrite(TRIG_PIN, LOW);
+  pinMode(pulsePin, OUTPUT);  // Add this line to initialize the pulse pin
 
   pinMode(BIN_TRIG_PIN, OUTPUT);
   pinMode(BIN_ECHO_PIN, INPUT);
@@ -185,10 +186,13 @@ void inspectBottle() {
 
     if (size == "Small") {
       sendPulse(1);
+      Serial.print("Credit 1");
     } else if (size == "Medium") {
       sendPulse(2);
+      Serial.print("Credit 2");
     } else if (size == "Large") {
       sendPulse(3);
+      Serial.print("Credit 3");
     }
     delay(5000);
     closeGate();
