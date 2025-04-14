@@ -176,6 +176,12 @@ float measureBinLevel() {
 void inspectBottle() {
   float height = measureBottleHeight();
   String size = classifyBottleSize(height);
+  
+  // If "Nothing" detected, just return without displaying anything
+  if (size == "Nothing") {
+    return;
+  }
+  
   bool hasWater = checkWaterPresence();
   bool accepted = !hasWater;
 
@@ -250,7 +256,8 @@ float measureBottleHeight() {
 }
 
 String classifyBottleSize(float height) {
-  if (height <= SMALL_MAX) return "Small";
+  if (height <= 5.0) return "Nothing";
+  else if (height <= SMALL_MAX) return "Small";
   else if (height <= MEDIUM_MAX) return "Medium";
   else return "Large";
 }
