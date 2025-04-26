@@ -129,6 +129,26 @@ void loop() {
     }
     delay(200); // Lower refresh rate for smooth countdown
   }
+      float binLevel = measureBinLevel();
+      bool binWasFull = false;
+     if (binLevel < BIN_FULL_THRESHOLD && !binWasFull) {
+       lcd.clear();
+       lcd.setCursor(0, 0);
+       lcd.print("!!! BIN FULL !!!");
+       sendSMS("+639473732949", "The Bin is FULL");
+       binWasFull = true;
+     } else if (binLevel >= BIN_FULL_THRESHOLD) {
+       binWasFull = false;
+       float binLevel = measureBinLevel();
+       if (binLevel < BIN_FULL_THRESHOLD && !binWasFull) {
+         lcd.clear();
+         lcd.setCursor(0, 0);
+         lcd.print("!!! BIN FULL !!!");
+         sendSMS("+639473732949", "The Bin is FULL");
+         binWasFull = true;
+       } else if (binLevel >= BIN_FULL_THRESHOLD) {
+         binWasFull = false;
+       }
 }
 
 // ===================
